@@ -12,19 +12,21 @@ class VotingService {
     required String votingCode,
   }) async {
     try {
-      final requestBody = {
+      final queryParameters = {
         'voterAdmissionNumber': voterAdmissionNumber,
         'candidateAdmissionNumber': candidateAdmissionNumber,
         'votingCode': votingCode,
       };
 
-      logger.i('Sending vote request to: $baseUrl/api/votes');
-      logger.i('Request body: ${json.encode(requestBody)}');
+      final uri = Uri.parse(
+        '$baseUrl/api/votes',
+      ).replace(queryParameters: queryParameters);
+
+      logger.i('Sending vote request to: $uri');
 
       final response = await http.post(
-        Uri.parse('$baseUrl/api/votes'),
+        uri,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode(requestBody),
       );
 
       logger.i('Response status code: ${response.statusCode}');

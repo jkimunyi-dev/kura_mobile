@@ -117,7 +117,7 @@ class _CandidateCardState extends State<CandidateCard> {
         'Casting vote for candidate: ${widget.candidate.user.admissionNumber}',
       );
 
-      // Cast the vote
+      // Cast the vote through the API
       final result = await VotingService.castVote(
         voterAdmissionNumber: voterAdmissionNumber,
         candidateAdmissionNumber: widget.candidate.user.admissionNumber,
@@ -127,16 +127,14 @@ class _CandidateCardState extends State<CandidateCard> {
       if (!mounted) return;
 
       if (result['success']) {
-        // Save vote locally
+        // Save vote locally only after successful API call
         await VoteService.saveVote(widget.candidate);
 
-        // Update the local state
         setState(() {
           _hasVotedForPosition = true;
           _isVoting = false;
         });
 
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Vote recorded successfully'),
@@ -144,12 +142,10 @@ class _CandidateCardState extends State<CandidateCard> {
           ),
         );
 
-        // Refresh the parent widget if needed
         if (widget.onVoteComplete != null) {
           widget.onVoteComplete!();
         }
 
-        // Close the details modal if it's open
         Navigator.of(context).pop();
       } else {
         throw Exception(result['message']);
